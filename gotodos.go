@@ -65,7 +65,7 @@ type Todo struct {
 func (t *Todo) key(c appengine.Context) *datastore.Key {
 	if t.Id == 0 {
 		t.Created = time.Now()
-		return datastore.NewIncompleteKey(c, "todo", defaultTodoList(c))
+		return datastore.NewIncompleteKey(c, "Todo", defaultTodoList(c))
 	}
 	return datastore.NewKey(c, "Todo", "", t.Id, defaultTodoList(c))
 }
@@ -88,7 +88,7 @@ func decodeTodo(reader io.ReadCloser) (*Todo, error) {
 
 func getAllTodos(c appengine.Context) ([]Todo, error) {
 	todos := []Todo{}
-	ks, err := datastore.NewQuery("todo").Ancestor(defaultTodoList(c)).Order("Created").GetAll(c, &todos)
+	ks, err := datastore.NewQuery("Todo").Ancestor(defaultTodoList(c)).Order("Created").GetAll(c, &todos)
 	c.Infof("%v, %v", ks, err)
 	if err != nil {
 		return nil, err
@@ -101,7 +101,7 @@ func getAllTodos(c appengine.Context) ([]Todo, error) {
 
 func archiveTodos(c appengine.Context) error {
 	return datastore.RunInTransaction(c, func(c appengine.Context) error {
-		ks, err := datastore.NewQuery("todo").KeysOnly().Ancestor(defaultTodoList(c)).Filter("Done=", true).GetAll(c, nil)
+		ks, err := datastore.NewQuery("Todo").KeysOnly().Ancestor(defaultTodoList(c)).Filter("Done=", true).GetAll(c, nil)
 		if err != nil {
 			return err
 		}
