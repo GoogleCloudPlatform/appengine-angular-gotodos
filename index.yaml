@@ -1,0 +1,3 @@
+indexes:
+- kind: Todo
+  ancestor: yes
