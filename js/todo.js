@@ -19,46 +19,46 @@
 // from https://angularjs.org/#add-some-control.
 // It uses the resource plugin to talk to an App Engine JSON backend.
 angular.module('todo', ['ngResource'])
-    .factory('Todo', function($resource) {
-	var Todo = $resource('/todos');
-	return Todo;
-    })
-    .controller('TodoCtrl', function($scope, Todo) {
-	$scope.todos = Todo.query();
+  .factory('Todo', function($resource) {
+    var Todo = $resource('/todos');
+    return Todo;
+  })
+  .controller('TodoCtrl', function($scope, Todo) {
+    $scope.todos = Todo.query();
 
-	$scope.addTodo = function() {
-	    var todo = new Todo();
-	    todo.text = $scope.todoText;
-	    todo.updating = true;
-	    todo.done = false;
-	    todo.$save();
-	    todo.state = 'saving'
-	    $scope.todos.push(todo);
-	    $scope.todoText = '';
-	};
+    $scope.addTodo = function() {
+      var todo = new Todo();
+      todo.text = $scope.todoText;
+      todo.updating = true;
+      todo.done = false;
+      todo.$save();
+      todo.state = 'saving'
+      $scope.todos.push(todo);
+      $scope.todoText = '';
+    };
 
-	$scope.change = function(todo) {
-	    todo.$save();
-	    todo.state = 'updating';
-	}
+    $scope.change = function(todo) {
+      todo.$save();
+      todo.state = 'updating';
+    }
 
-	$scope.disabled = function(todo) {
-	    return todo.state !== undefined
-	}
+    $scope.disabled = function(todo) {
+      return todo.state !== undefined
+    }
 
-	$scope.remaining = function() {
-	    var count = 0;
-	    angular.forEach($scope.todos, function(todo) {
-		count += todo.done ? 0 : 1;
-	    });
-	    return count;
-	};
+    $scope.remaining = function() {
+      var count = 0;
+      angular.forEach($scope.todos, function(todo) {
+        count += todo.done ? 0 : 1;
+      });
+      return count;
+    };
 
-	$scope.archive = function() {
-	    Todo.remove(function() {
-		Todo.query(function(todos) {
-		    $scope.todos = todos;
-		});
-	    });
-	};
-    });
+    $scope.archive = function() {
+      Todo.remove(function() {
+        Todo.query(function(todos) {
+          $scope.todos = todos;
+        });
+      });
+    };
+  });
