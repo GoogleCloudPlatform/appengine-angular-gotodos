@@ -1,7 +1,7 @@
 appengine-angular-gotodos
 =========================
 
-**gotodos** is an [App Engine][1] backend written in [Go][3] for the TODO list sample in [Angular.js getting started documentation][0].
+**gotodos** is an [App Engine][1] backend written in [Go][3] for the TODO list demo from [Angular.js getting started documentation][0].
 
 ## APIs and libraries used
 - [App Engine Go Runtime][1]
@@ -14,10 +14,10 @@ appengine-angular-gotodos
 ## Dependencies
 - [Bootstrap][5] 
 
-[0]: https://angularjs.org/#add-some-control
+[0]: http://angularjs.org/#add-some-control
 [1]: https://developers.google.com/appengine/docs/go/overview
-[2]: https://angularjs.org
-[3]: https://golang.org
+[2]: http://angularjs.org
+[3]: http://golang.org
 [4]: https://developers.google.com/appengine/docs/go/datastore/overview
-[5]: https://twitter.github.io/bootstrap/
+[5]: http://twitter.github.io/bootstrap/
 [6]: https://developers.google.com/appengine
