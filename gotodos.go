@@ -79,17 +79,16 @@ func (t *Todo) save(c appengine.Context) (*Todo, error) {
 	return t, nil
 }
 
-func decodeTodo(reader io.ReadCloser) (*Todo, error) {
-	defer reader.Close()
+func decodeTodo(r io.ReadCloser) (*Todo, error) {
+	defer r.Close()
 	var todo Todo
-	err := json.NewDecoder(reader).Decode(&todo)
+	err := json.NewDecoder(r).Decode(&todo)
 	return &todo, err
 }
 
 func getAllTodos(c appengine.Context) ([]Todo, error) {
 	todos := []Todo{}
 	ks, err := datastore.NewQuery("Todo").Ancestor(defaultTodoList(c)).Order("Created").GetAll(c, &todos)
-	c.Infof("%v, %v", ks, err)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +98,7 @@ func getAllTodos(c appengine.Context) ([]Todo, error) {
 	return todos, nil
 }
 
-func archiveTodos(c appengine.Context) error {
+func deleteDoneTodos(c appengine.Context) error {
 	return datastore.RunInTransaction(c, func(c appengine.Context) error {
 		ks, err := datastore.NewQuery("Todo").KeysOnly().Ancestor(defaultTodoList(c)).Filter("Done=", true).GetAll(c, nil)
 		if err != nil {
@@ -110,25 +109,23 @@ func archiveTodos(c appengine.Context) error {
 }
 
 func init() {
-	http.HandleFunc("/todos", handler(handleTodos))
+	http.HandleFunc("/todos", handler)
 }
 
-func handler(h func(appengine.Context, http.ResponseWriter, *http.Request) (interface{}, error)) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		c := appengine.NewContext(r)
-		val, err := h(c, w, r)
-		if err == nil {
-			err = json.NewEncoder(w).Encode(val)
-		}
-		if err != nil {
-			c.Errorf("todo error: %#v", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+func handler(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	val, err := handleTodos(c, r)
+	if err == nil {
+		err = json.NewEncoder(w).Encode(val)
+	}
+	if err != nil {
+		c.Errorf("todo error: %#v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
-func handleTodos(c appengine.Context, w http.ResponseWriter, r *http.Request) (interface{}, error) {
+func handleTodos(c appengine.Context, r *http.Request) (interface{}, error) {
 	switch r.Method {
 	case "POST":
 		todo, err := decodeTodo(r.Body)
@@ -139,7 +136,7 @@ func handleTodos(c appengine.Context, w http.ResponseWriter, r *http.Request) (i
 	case "GET":
 		return getAllTodos(c)
 	case "DELETE":
-		return nil, archiveTodos(c)
+		return nil, deleteDoneTodos(c)
 	}
 	return nil, fmt.Errorf("method not implemented")
 }

@@ -18,5 +18,5 @@ handlers:
 - url: /css
   static_dir: css
 
-- url: /.*
+- url: /todos
   script: _go_app
